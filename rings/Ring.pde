@@ -17,6 +17,8 @@ class Ring{
   float textureAngleOffset = 0;
   float textureAngularSpeed = 0;
   float alpha = 1;
+  boolean useFillColor = true;
+  color fillColor = #ff9940;
   boolean presence = true;
 
 public Ring(float innerR, float outerR, float x, float y){
@@ -34,6 +36,12 @@ public Ring(float innerR, float outerR, float x, float y){
   calculateControlPoints();
   
   remapTexture();
+}
+
+public void print(){
+  for(int i = 0; i<noPies; i++){
+    println(i + " " + innerPoints[i].x + ", " + innerPoints[i].y);
+  }
 }
 public void update(){
   fade();

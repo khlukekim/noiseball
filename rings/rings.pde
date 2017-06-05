@@ -15,8 +15,15 @@ float imageHeight;
 float lastTimeStamp;
 
 Ring[] rings;
-int noRings = 8;
+int noRings = 24;
 int bandsPerRing;
+
+
+// set to true to turn on gradient color
+boolean useFillColor = true;
+// gradient colors; from the inside out
+color c1 = #000020;
+color c2 = #203050;
 
 void setup(){
   size(800, 800, P2D);
@@ -33,7 +40,9 @@ void setup(){
   float ringThickness = width*0.3/noRings;
   for(int i = 0; i<noRings; i++){
     rings[i] = new Ring(ringThickness*(i)+1, ringThickness*(i+1)-4, width/2, height/2);
+    rings[i].useFillColor = useFillColor;
   }
+  setColor(c1, c2, rings);
   lastTimeStamp=millis();
 }
 
@@ -67,35 +76,31 @@ void draw(){
 
 void drawARing(Ring ring){
   noStroke();
-  //stroke(0,0,0);
+  
   beginShape();
-  texture(img);
+  
+  if (ring.useFillColor) {
+    fill(ring.fillColor,ring.alpha);
+  } else {
+    texture(img);
+  }
   for(int i = 0; i<ring.outerPoints.length; i++){
-  vertex(ring.x+ring.outerPoints[i].x, ring.y+ring.outerPoints[i].y, img.width/2+ring.outerPoints[i].originX, img.height/2+ring.outerPoints[i].originY);
+    vertex(ring.x+ring.outerPoints[i].x, ring.y+ring.outerPoints[i].y, img.width/2+ring.outerPoints[i].originX, img.height/2+ring.outerPoints[i].originY);
   }
 
   beginContour();
-  for(int i = 0; i<ring.innerPoints.length; i++){
+  for(int i = ring.innerPoints.length-1; i>=0; i--){
     vertex(ring.x+ring.innerPoints[i].x, ring.y+ring.innerPoints[i].y, img.width/2+ring.innerPoints[i].originX, img.height/2+ring.innerPoints[i].originY);
   }
 
   endContour();
   endShape();
-  
-  
-  fill(0,1-ring.alpha);
-  beginShape();
-  for(int i = 0; i<ring.outerPoints.length; i++){
-  vertex(ring.x+ring.outerPoints[i].x, ring.y+ring.outerPoints[i].y, img.width/2+ring.outerPoints[i].originX, img.height/2+ring.outerPoints[i].originY);
-  }
+}
 
-  beginContour();
-  for(int i = 0; i<ring.innerPoints.length; i++){
-    vertex(ring.x+ring.innerPoints[i].x, ring.y+ring.innerPoints[i].y, img.width/2+ring.innerPoints[i].originX, img.height/2+ring.innerPoints[i].originY);
+void setColor(color c1, color c2, Ring[] rings){
+  for(int i=0; i<rings.length; i++){
+    rings[i].fillColor = lerpColor(c1, c2, 1.*i/(rings.length-1));
   }
-
-  endContour();
-  endShape();
 }
 
 void drawFPS(){
