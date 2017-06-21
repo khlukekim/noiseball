@@ -19,7 +19,9 @@ class Ring{
   float alpha = 1;
   boolean useFillColor = true;
   color fillColor = #ff9940;
+  color[] fillColors;
   boolean presence = true;
+  boolean drawSeparate = true;
 
 public Ring(float innerR, float outerR, float x, float y){
   this.innerR = innerR;
@@ -29,9 +31,11 @@ public Ring(float innerR, float outerR, float x, float y){
   this.noiseZ = innerR;
   innerPoints = new Point[noPies];
   outerPoints = new Point[noPies];
+  fillColors = new color[noPies];
   for(int i = 0; i<noPies; i++){
     innerPoints[i] = new Point();
     outerPoints[i] = new Point();
+    fillColors[i] = fillColor;
   }
   calculateControlPoints();
   
@@ -104,4 +108,14 @@ public void fade(){
   }
 }
 
+public void randomizeColor(){
+  for(int i = 0; i<noPies; ){
+    float modifier = 0.1;
+    color c = color(hue(this.fillColor)+modifier*(noise(i)-0.5), saturation(this.fillColor)+modifier*(noise(i+1)-0.5), brightness(this.fillColor)+modifier*(noise(i+2)-0.5));
+    for(int j = 0; j<10; j++){
+      fillColors[i] = c;
+      i++;
+    }
+  }
+}
 }
