@@ -43,10 +43,12 @@ void setup(){
   
   rings = new Ring[noRings];
   float ringThickness = width*0.3/noRings;
-  setColor(c1, c2, rings);
   for(int i = 0; i<noRings; i++){
     rings[i] = new Ring(ringThickness*(i)+1, ringThickness*(i+1)-4, width/2, height/2);
     rings[i].useFillColor = useFillColor;
+  }
+  setColor(c1, c2, rings);
+  for(int i = 0; i<noRings; i++){
     rings[i].randomizeColor();
   }
   lastTimeStamp=millis();
