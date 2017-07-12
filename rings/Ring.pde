@@ -13,6 +13,9 @@ class Ring{
   float noiseX = 0;
   float noiseY = 0;
   float noiseZ = 0;
+  float outerNoise = 0;
+  float targetAlpha = 1;
+  public boolean useOuterNoise = true;
   public float noiseIncrement = 0.025;
   float textureAngleOffset = 0;
   float textureAngularSpeed = 0;
@@ -20,7 +23,6 @@ class Ring{
   boolean useFillColor = true;
   color fillColor = #ff9940;
   color[] fillColors;
-  boolean presence = true;
   boolean drawSeparate = true;
 
 public Ring(float innerR, float outerR, float x, float y){
@@ -69,23 +71,28 @@ void remapTexture(){
 }
 
 void calculateControlPoints(){
-  float angle = 0;
+  float angle = textureAngleOffset;
   for(int i = 0; i<noPies; i++){
     innerPoints[i].setRTheta(innerR*innerRMod*(1-noise(angle, noiseY,noiseZ)/20), angle);
-    outerPoints[i].setRTheta(outerR*outerRMod, angle);
+    if(useOuterNoise){
+      outerPoints[i].setRTheta((0.9+pow(1000,outerRMod-1)*0.1*noise(outerNoise, i*1))*outerR*outerRMod, angle);
+    }else{
+      outerPoints[i].setRTheta(outerR*outerRMod, angle);
+    }
     angle+=anglePie;
   }
+  outerNoise+=0.03;
 }
 
 
 
 public void modifyInnerR(float mod){
 
-  innerRMod = interpolate(innerRMod,1+(outerR-innerR)*mod/innerR,0.1);
+  innerRMod = interpolate(innerRMod,1+(outerR-innerR)*mod/100,0.25);
 }
 
 public void modifyOuterR(float mod){
-  outerRMod = interpolate(outerRMod,1+(outerR-innerR)*mod/outerR,0.1);
+  outerRMod = interpolate(outerRMod,1+(outerR-innerR)*mod/100,0.25);
 }
 
 public float interpolate(float original, float target, float originalToTargetRatio){
@@ -101,11 +108,7 @@ public void modifyTextureAngleOffset(float mod){
 }
 
 public void fade(){
-  if(presence){
-    alpha += alpha>=1?0:0.005;
-  }else{
-    alpha -= alpha<=0?0:0.005;
-  }
+   alpha = 0.95 * alpha + 0.05 *targetAlpha;
 }
 
 public void randomizeColor(){
